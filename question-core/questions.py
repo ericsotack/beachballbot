@@ -9,7 +9,7 @@ import pyllist
 
 
 """ Default location of the questions JSON file """
-QUESTIONS = '../conf/questions.json'
+QUESTION_FILE = '../conf/questions.json'
 
 
 class MostRecentQuestions(object):
@@ -35,14 +35,17 @@ class MostRecentQuestions(object):
         """
         Adds a question to the list of most recent questions
         :param question: The question that was asked most recently
-        :return: n/a
+        :return: True if it was successful, False if the question is present already.
         """
+        if self.exists(question):
+            return False
+
         if self.llst.size < self.capacity:
             self.llst.append(question)
-            self.capacity += 1
         else:   # at capacity
             self.llst.popleft()
             self.llst.append(question)
+        return True
 
     def exists(self, question: str) -> bool:
         """
@@ -126,7 +129,33 @@ class QuestionDB(object):
         rand = random.Random()
         rand.seed(int(time.time()))
         cur = q_list[rand.randrange(len(q_list))]
-        while self.mrq.exists(cur) and not self.mrq.size() < len(q_list):
+        while self.mrq.exists(cur) and not len(q_list) <= self.mrq.size():
+            print("\tIgnored:", cur)
             cur = q_list[rand.randrange(len(q_list))]
         self.mrq.add(cur)
         return cur
+
+
+def debug():
+    """
+    Method to use when running this module directly.
+    Allows for setting up debug scenarios
+    :return: n/a
+    """
+    db = QuestionDB(QUESTION_FILE)
+    print(db.db)
+    # q_list = db.questions_categories(['hobbies', 'computing', 'fun'])
+    # db.get_question_from_list(q_list)
+
+    print(db.get_question('fun'))
+    print(db.get_question('fun'))
+    print(db.get_question('fun'))
+    print(db.get_question('fun'))
+
+    print("\nNot alllowed list:")
+    for node in db.mrq.llst.iternodes():
+        print(node())
+
+
+if __name__ == "__main__":
+    debug()
