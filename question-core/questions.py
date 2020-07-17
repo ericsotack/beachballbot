@@ -2,67 +2,25 @@
 Backend to read in a store of questions and offer a random question when queried.
 """
 
-import json
 import random
 import time
-import pyllist
 
 
 """ Default location of the questions JSON file """
-QUESTION_FILE = '../conf/questions.json'
+QUESTION_FILE = '../conf/questions.txt'
 
 
-class MostRecentQuestions(object):
+def read_config_file(filename: str) -> list:
     """
-    Represents a queue of the most recent questions, so the most recently asked questions can be avoided.
+    filename should point to a file that has questions, each on its own line
+    :param filename: The file from which to read the questions.
+    :return: List of question strings.
     """
-    def __init__(self, capacity=2):
-        """
-        Create a new MostRecentQuestions object.
-        :param capacity: how many questions back should be avoided
-        """
-        self.llst = pyllist.dllist()
-        self.capacity = capacity
-
-    def clear(self):
-        """
-        Clears the current list of most recent questions
-        :return: n/a
-        """
-        self.llst = pyllist.dllist()
-
-    def add(self, question: str):
-        """
-        Adds a question to the list of most recent questions
-        :param question: The question that was asked most recently
-        :return: True if it was successful, False if the question is present already.
-        """
-        if self.exists(question):
-            return False
-
-        if self.llst.size < self.capacity:
-            self.llst.append(question)
-        else:   # at capacity
-            self.llst.popleft()
-            self.llst.append(question)
-        return True
-
-    def exists(self, question: str) -> bool:
-        """
-        Check if a question is present in the most recently asked questions
-        :param question: The question to potentially be asked
-        :return: True if the question was asked recently (within capacity history)
-        """
-        for node in self.llst.iternodes():
-            if question == node():
-                return True
-        return False
-
-    def size(self) -> int:
-        """
-        :return: The number of questions currently stored.
-        """
-        return self.llst.size
+    q_list = []
+    with open(filename) as fd:
+        for line in fd.readlines():
+            q_list.append(line.strip())
+    return q_list
 
 
 class QuestionDB(object):
@@ -71,68 +29,27 @@ class QuestionDB(object):
     NOTE: The number of questions in a category must be greater than the capacity of the most recent.
     """
 
-    def __init__(self, filename: str, capacity=2):
+    def __init__(self, filename: str):
         """
-        Read in a JSON data file containing an object mapping category types to arrays of
-        questions relevant to that category.
+        Read in a text data file containing the questions, each on its own line.
         :param filename: Path to the json file in which the questions are stored.
-        :return: A dictionary of question categories mapped to lists of relevant questions.
+        :return: A list of question strings.
         """
-        with open(filename) as fd:
-            contents = fd.read()
-        db = json.loads(contents)
-        assert isinstance(db, dict)
-        self.db = db
-        self.mrq = MostRecentQuestions(capacity)
+        self.db = read_config_file(filename)
 
-    def all_categories(self):
+    def get_question(self, omit_list=None) -> str:
         """
-        Return a list of all of the categories present in the database.
-        :return: The categories of questions present
-        """
-        return self.db.keys()
-
-    def questions_category(self, category: str) -> list:
-        """
-        From the question_db, gets the list of questions associated with a certain category
-        :param category: The desired category of questions
-        :return: The list of questions associated with that category
-        """
-        return self.db[category]
-
-    def questions_categories(self, categories: list) -> list:
-        """
-        Get the list of questions associated with the list of
-        :param categories: The list of categories to pull questions from
-        :return: The list of questions associated with the given categories.
-        """
-        q_list = []
-        for category in categories:
-            q_list.extend(self.questions_category(category))
-        return q_list
-
-    def get_question(self, category: str = 'general') -> str:
-        """
-        Pull a random question from the specified category (general by default)
-        :param category: The category to pull the question from.
+        Pull a random question (that does not appear in the ) from the question database.
+        :param omit_list:
         :return: A random question from the specified category
         """
-        q_list = self.questions_category(category)
-        return self.get_question_from_list(q_list)
-
-    def get_question_from_list(self, q_list: list) -> str:
-        """
-        Pull a random question from a given list of questions.
-        :param q_list: The list from which a random question is pulled.
-        :return: A random question form the q_list
-        """
+        if omit_list is None:
+            omit_list = []
         rand = random.Random()
         rand.seed(int(time.time()))
-        cur = q_list[rand.randrange(len(q_list))]
-        while self.mrq.exists(cur) and not len(q_list) <= self.mrq.size():
-            print("\tIgnored:", cur)
-            cur = q_list[rand.randrange(len(q_list))]
-        self.mrq.add(cur)
+        cur = self.db[rand.randrange(len(self.db))]
+        while cur in omit_list:
+            cur = self.db[rand.randrange(len(self.db))]
         return cur
 
 
@@ -144,17 +61,6 @@ def debug():
     """
     db = QuestionDB(QUESTION_FILE)
     print(db.db)
-    # q_list = db.questions_categories(['hobbies', 'computing', 'fun'])
-    # db.get_question_from_list(q_list)
-
-    print(db.get_question('fun'))
-    print(db.get_question('fun'))
-    print(db.get_question('fun'))
-    print(db.get_question('fun'))
-
-    print("\nNot alllowed list:")
-    for node in db.mrq.llst.iternodes():
-        print(node())
 
 
 if __name__ == "__main__":

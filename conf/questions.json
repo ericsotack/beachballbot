@@ -1,7 +1,0 @@
-{
-  "general": ["What is your favorite color?", "Where are you from?", "What is something unique about your hometown?", "Do you have any pets?", "Favorite food?", "Why did you choose RIT?"],
-  "computing": ["Linux, Windows, or Mac?", "Favorite programming language? (If you don't know how to program, do you want to learn?)", "Would you rather live without your computer or phone for a year?"],
-  "hobbies": ["Do you have any hobbies?", "Favorite video game?"],
-  "fun": ["Are hot dogs a sandwich?", "Are burritos a sandwich?", "Flying or invisibility?"],
-  "wyr": ["Would you rather fight 100 duck sized horses, or 1 horse sized duck?"]
-}
