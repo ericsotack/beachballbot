@@ -38,7 +38,7 @@ class QuestionDB(object):
         """
         self.db = read_config_file(filename)
         self.rand = random.Random()
-        self.rand.seed(time.time())
+        self.rand.seed(time.time_ns())
 
     def size(self):
         """
@@ -52,6 +52,14 @@ class QuestionDB(object):
         """
         return self.db
 
+    def question_at_index(self, idx: int) -> str:
+        """
+        :param idx: The index in the question list to get the question (must be < the length of question_list)
+        :return: The question at the specified index.
+        """
+        assert idx < len(self.db)
+        return self.db[idx]
+
     def random_question(self, omit_list=None) -> str:
         """
         Pull a random question (that does not appear in the omit_list) from the question database.
@@ -64,19 +72,7 @@ class QuestionDB(object):
         # difference between db_list and omit_list
         q_list = [item for item in self.db if item not in omit_list]
         idx = self.rand.randrange(len(q_list))
-        cur = self.db[idx]
-        while cur in omit_list:
-            idx = self.rand.randrange(len(q_list))
-            cur = self.db[idx]
-        return cur
-
-    def question_at_index(self, idx: int) -> str:
-        """
-        :param idx: The index in the question list to get the question (must be < the length of question_list)
-        :return: The question at the specified index.
-        """
-        assert idx < len(self.db)
-        return self.db[idx]
+        return q_list[idx]
 
     def sqlite_db(self, db_file: str):
         """
@@ -126,6 +122,21 @@ class QuestionDB(object):
         conn.close()
         return val
 
+    @staticmethod
+    def sql_get_random_question(db_file: str, omit_list = None) -> str:
+        all_list = QuestionDB.sql_get_questions(db_file)
+
+        if omit_list is None or len(omit_list) >= len(all_list):
+            omit_list = []
+
+        # difference between db_list and omit_list
+        q_list = [item for item in all_list if item not in omit_list]
+
+        rand = random.random()
+        rand.seed(time.time_ns())
+        idx = rand.randrange(len(q_list))
+        return q_list[idx]
+
 
 def debug():
     """
@@ -145,6 +156,7 @@ def debug():
     db.sqlite_db(DATABASE_FILE)
     print(db.sql_get_question_at_idx(0, DATABASE_FILE))
     print(db.sql_get_questions(DATABASE_FILE))
+    print(db.sql_get_random_question(DATABASE_FILE))
 
 
 if __name__ == "__main__":
