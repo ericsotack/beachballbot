@@ -36,6 +36,8 @@ class QuestionDB(object):
         :return: A list of question strings.
         """
         self.db = read_config_file(filename)
+        self.rand = random.Random()
+        self.rand.seed(time.time())
 
     def get_question(self, omit_list=None) -> str:
         """
@@ -45,11 +47,13 @@ class QuestionDB(object):
         """
         if omit_list is None:
             omit_list = []
-        rand = random.Random()
-        rand.seed(int(time.time()))
-        cur = self.db[rand.randrange(len(self.db))]
+        # difference between db_list and omit_list
+        q_list = [item for item in self.db if item not in omit_list]
+        idx = self.rand.randrange(len(q_list))
+        cur = self.db[idx]
         while cur in omit_list:
-            cur = self.db[rand.randrange(len(self.db))]
+            idx = self.rand.randrange(len(q_list))
+            cur = self.db[idx]
         return cur
 
 
@@ -61,6 +65,13 @@ def debug():
     """
     db = QuestionDB(QUESTION_FILE)
     print(db.db)
+    print(db.get_question())
+    print(db.get_question())
+
+    denylist = read_config_file(QUESTION_FILE)
+    denylist = denylist[1:]
+    print(db.get_question(denylist))
+    print(db.get_question(denylist))
 
 
 if __name__ == "__main__":
