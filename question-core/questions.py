@@ -26,7 +26,6 @@ def read_config_file(filename: str) -> list:
 class QuestionDB(object):
     """
     Object that holds questions for use with a question chat bot.
-    NOTE: The number of questions in a category must be greater than the capacity of the most recent.
     """
 
     def __init__(self, filename: str):
@@ -41,11 +40,12 @@ class QuestionDB(object):
 
     def get_question(self, omit_list=None) -> str:
         """
-        Pull a random question (that does not appear in the ) from the question database.
-        :param omit_list:
+        Pull a random question (that does not appear in the omit_list) from the question database.
+        :param omit_list: List of question strings to not produce.
         :return: A random question from the specified category
         """
-        if omit_list is None:
+        # avoids not having any question that can be asked
+        if omit_list is None or len(omit_list) >= len(self.db):
             omit_list = []
         # difference between db_list and omit_list
         q_list = [item for item in self.db if item not in omit_list]
