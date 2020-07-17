@@ -2,17 +2,21 @@ from flask import Flask, g, jsonify
 import questions as q
 app = Flask(__name__)
 
-
-@app.route('/questions', methods=['GET'])
-def get_questions():
-    # returns the list of all questions {"questions: [q_list_elements]"}
-    return jsonify()
+# TODO  how to either instantiate a QuestionsDB to be used by all routes or
+#       OR
+# TODO  run the methods to create a db at startup so it can be referenced by file in routes
 
 
 @app.route('/size', methods=['GET'])
 def get_size():
     # returns the size of the list of questions {"size": int}
     pass
+
+
+@app.route('/questions', methods=['GET'])
+def get_questions():
+    # returns the list of all questions {"questions: [q_list_elements]"}
+    return jsonify()
 
 
 @app.route('/questions/<int:qid>', methods=['GET'])
