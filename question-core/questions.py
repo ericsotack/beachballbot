@@ -12,7 +12,7 @@ QUESTION_FILE = '../conf/questions.txt'
 DATABASE_FILE = '../conf/questions.db'
 
 
-def read_config_file(filename: str) -> list:
+def _read_config_file(filename: str) -> list:
     """
     filename should point to a file that has questions, each on its own line
     :param filename: The file from which to read the questions.
@@ -25,9 +25,26 @@ def read_config_file(filename: str) -> list:
     return q_list
 
 
-class QuestionDB(object):
+def _create_db_from_list(q_list: list, db_file: str):
+    """
+    Creates a sqlite db at db_file containing the list of questions.
+    :param q_list: The list of questions.
+    :param db_file: The path to the file to store the sqlite db in.
+    :return: n/a
+    """
+    conn = sqlite3.connect(db_file)
+    cur = conn.cursor()
+    cur.execute("DROP TABLE QUESTIONS")
+    cur.execute("CREATE TABLE QUESTIONS ([qid] INTEGER PRIMARY KEY, [question] VARCHAR)")
+    cur.executemany("INSERT INTO QUESTIONS (question) VALUES (?)", [(q,) for q in q_list])
+    conn.commit()
+    cur.close()
+
+
+class QuestionList(object):
     """
     Object that holds questions for use with a question chat bot.
+    Stores questions in a list.
     """
 
     def __init__(self, filename: str):
@@ -36,7 +53,7 @@ class QuestionDB(object):
         :param filename: Path to the json file in which the questions are stored.
         :return: A list of question strings.
         """
-        self.db = read_config_file(filename)
+        self.db = _read_config_file(filename)
         self.rand = random.Random()
         self.rand.seed(time.time_ns())
 
@@ -64,7 +81,7 @@ class QuestionDB(object):
         """
         Pull a random question (that does not appear in the omit_list) from the question database.
         :param omit_list: List of question strings to not produce.
-        :return: A random question from the specified category
+        :return: A random question from the collection of questions.
         """
         # avoids not having any question that can be asked
         if omit_list is None or len(omit_list) >= len(self.db):
@@ -80,13 +97,24 @@ class QuestionDB(object):
         :param db_file: The path to the file to store the sqlite db in.
         :return: n/a
         """
-        conn = sqlite3.connect(db_file)
-        cur = conn.cursor()
-        cur.execute("DROP TABLE QUESTIONS")
-        cur.execute("CREATE TABLE QUESTIONS ([qid] INTEGER PRIMARY KEY, [question] VARCHAR)")
-        cur.executemany("INSERT INTO QUESTIONS (question) VALUES (?)", [(q,) for q in self.db])
-        conn.commit()
-        cur.close()
+        _create_db_from_list(self.db, db_file)
+
+
+class QuestionDB(object):
+    """
+    Object that holds questions for use with a question chat bot.
+    Stores questions in a sqlite db.
+    """
+
+    @staticmethod
+    def create_db(question_file: str, db_file: str):
+        """
+        Creates a sqlite db at db_file containing the list of questions.
+        :param db_file: The path to the file to store the sqlite db in.
+        :return: n/a
+        """
+        q_list = _read_config_file(question_file)
+        _create_db_from_list(q_list, db_file)
 
     @staticmethod
     def sql_get_questions(db_file: str) -> list:
@@ -124,6 +152,12 @@ class QuestionDB(object):
 
     @staticmethod
     def sql_get_random_question(db_file: str, omit_list = None) -> str:
+        """
+        Get a random question from a sqlite db.
+        :param db_file: The file that the sqlite db is stored in.
+        :param omit_list: List of question strings to not produce.
+        :return: A random question from the collection of questions.
+        """
         all_list = QuestionDB.sql_get_questions(db_file)
 
         if omit_list is None or len(omit_list) >= len(all_list):
@@ -132,7 +166,7 @@ class QuestionDB(object):
         # difference between db_list and omit_list
         q_list = [item for item in all_list if item not in omit_list]
 
-        rand = random.random()
+        rand = random.Random()
         rand.seed(time.time_ns())
         idx = rand.randrange(len(q_list))
         return q_list[idx]
@@ -144,7 +178,7 @@ def debug():
     Allows for setting up debug scenarios
     :return: n/a
     """
-    db = QuestionDB(QUESTION_FILE)
+    db = QuestionList(QUESTION_FILE)
     print(db.db)
     # print(db.get_question())
     # print(db.get_question())
@@ -153,10 +187,10 @@ def debug():
     # denylist = denylist[1:]
     # print(db.get_question(denylist))
     # print(db.get_question(denylist))
-    db.sqlite_db(DATABASE_FILE)
-    print(db.sql_get_question_at_idx(0, DATABASE_FILE))
-    print(db.sql_get_questions(DATABASE_FILE))
-    print(db.sql_get_random_question(DATABASE_FILE))
+    QuestionDB.create_db(QUESTION_FILE, DATABASE_FILE)
+    print(QuestionDB.sql_get_question_at_idx(0, DATABASE_FILE))
+    print(QuestionDB.sql_get_questions(DATABASE_FILE))
+    print(QuestionDB.sql_get_random_question(DATABASE_FILE))
 
 
 if __name__ == "__main__":
