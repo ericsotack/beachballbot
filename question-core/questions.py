@@ -9,6 +9,7 @@ import sqlite3
 """ Default location of the questions JSON file """
 QUESTION_FILE = '../conf/questions.txt'
 
+""" Default location of the questions sqlite db file """
 DATABASE_FILE = '../conf/questions.db'
 
 
@@ -110,11 +111,25 @@ class QuestionDB(object):
     def create_db(question_file: str, db_file: str):
         """
         Creates a sqlite db at db_file containing the list of questions.
+        :param question_file: The text file containing the questions, each on their own line
         :param db_file: The path to the file to store the sqlite db in.
         :return: n/a
         """
         q_list = _read_config_file(question_file)
         _create_db_from_list(q_list, db_file)
+
+    @staticmethod
+    def sql_size(db_file: str) -> int:
+        """
+        Determines how many questions are in the database
+        :param db_file: The file that the sqlite db is stored in
+        :return: The number of questions in the database.
+        """
+        conn = sqlite3.connect(db_file)
+        cur = conn.cursor()
+        val_lst = cur.execute("SELECT COUNT(*) FROM QUESTIONS").fetchall()
+        conn.close()
+        return val_lst[0][0]
 
     @staticmethod
     def sql_get_questions(db_file: str) -> list:
@@ -151,7 +166,7 @@ class QuestionDB(object):
         return val
 
     @staticmethod
-    def sql_get_random_question(db_file: str, omit_list = None) -> str:
+    def sql_get_random_question(db_file: str, omit_list=None) -> str:
         """
         Get a random question from a sqlite db.
         :param db_file: The file that the sqlite db is stored in.
