@@ -1,5 +1,6 @@
 # Added stuff
 .idea/
+conf/questions.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
