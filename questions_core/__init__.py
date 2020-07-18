@@ -17,7 +17,8 @@ def read_config_file(filename: str) -> list:
     q_list = []
     with open(filename) as fd:
         for line in fd.readlines():
-            q_list.append(line.strip())
+            if not line.startswith('#'):    # comment out lines with #
+                q_list.append(line.strip())
     return q_list
 
 
