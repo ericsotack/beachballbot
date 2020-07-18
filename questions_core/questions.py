@@ -6,40 +6,7 @@ import random
 import time
 import sqlite3
 
-""" Default location of the questions JSON file """
-QUESTION_FILE = '../conf/questions.txt'
-
-""" Default location of the questions sqlite db file """
-DATABASE_FILE = '../conf/questions.db'
-
-
-def _read_config_file(filename: str) -> list:
-    """
-    filename should point to a file that has questions, each on its own line
-    :param filename: The file from which to read the questions.
-    :return: List of question strings.
-    """
-    q_list = []
-    with open(filename) as fd:
-        for line in fd.readlines():
-            q_list.append(line.strip())
-    return q_list
-
-
-def _create_db_from_list(q_list: list, db_file: str):
-    """
-    Creates a sqlite db at db_file containing the list of questions.
-    :param q_list: The list of questions.
-    :param db_file: The path to the file to store the sqlite db in.
-    :return: n/a
-    """
-    conn = sqlite3.connect(db_file)
-    cur = conn.cursor()
-    cur.execute("DROP TABLE QUESTIONS")
-    cur.execute("CREATE TABLE QUESTIONS ([qid] INTEGER PRIMARY KEY, [question] VARCHAR)")
-    cur.executemany("INSERT INTO QUESTIONS (question) VALUES (?)", [(q,) for q in q_list])
-    conn.commit()
-    cur.close()
+import questions_core as qc
 
 
 class QuestionList(object):
@@ -54,7 +21,7 @@ class QuestionList(object):
         :param filename: Path to the json file in which the questions are stored.
         :return: A list of question strings.
         """
-        self.db = _read_config_file(filename)
+        self.db = qc.read_config_file(filename)
         self.rand = random.Random()
         self.rand.seed(time.time_ns())
 
@@ -98,7 +65,7 @@ class QuestionList(object):
         :param db_file: The path to the file to store the sqlite db in.
         :return: n/a
         """
-        _create_db_from_list(self.db, db_file)
+        qc.create_db_from_list(self.db, db_file)
 
 
 class QuestionDB(object):
@@ -106,17 +73,6 @@ class QuestionDB(object):
     Object that holds questions for use with a question chat bot.
     Stores questions in a sqlite db.
     """
-
-    @staticmethod
-    def create_db(question_file: str, db_file: str):
-        """
-        Creates a sqlite db at db_file containing the list of questions.
-        :param question_file: The text file containing the questions, each on their own line
-        :param db_file: The path to the file to store the sqlite db in.
-        :return: n/a
-        """
-        q_list = _read_config_file(question_file)
-        _create_db_from_list(q_list, db_file)
 
     @staticmethod
     def sql_size(db_file: str) -> int:
@@ -193,7 +149,7 @@ def debug():
     Allows for setting up debug scenarios
     :return: n/a
     """
-    db = QuestionList(QUESTION_FILE)
+    db = QuestionList(qc.QUESTION_FILE)
     print(db.db)
     # print(db.get_question())
     # print(db.get_question())
@@ -202,10 +158,9 @@ def debug():
     # denylist = denylist[1:]
     # print(db.get_question(denylist))
     # print(db.get_question(denylist))
-    QuestionDB.create_db(QUESTION_FILE, DATABASE_FILE)
-    print(QuestionDB.sql_get_question_at_idx(0, DATABASE_FILE))
-    print(QuestionDB.sql_get_questions(DATABASE_FILE))
-    print(QuestionDB.sql_get_random_question(DATABASE_FILE))
+    print(QuestionDB.sql_get_question_at_idx(0, qc.DATABASE_FILE))
+    print(QuestionDB.sql_get_questions(qc.DATABASE_FILE))
+    print(QuestionDB.sql_get_random_question(qc.DATABASE_FILE))
 
 
 if __name__ == "__main__":
