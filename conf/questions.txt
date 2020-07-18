@@ -9,7 +9,7 @@ Spotify or Apple Music?
 Apple or Android?
 Coffee or tea? Hot or iced?
 Why did you pick RIT?
-What’s your phone background and why?
+What's your phone background and why?
 Google Suite or Microsoft Office?
 Favorite pasta shape?
 Favorite season?
@@ -28,8 +28,8 @@ What decade would you like to live in and why?
 Favorite book/series?
 What TV/movie streaming service do you like best?
 What would you do for a Klondike bar?
-Coolest place you’ve traveled?
-Where would you like to travel that you haven’t been?
+Coolest place you've traveled?
+Where would you like to travel that you haven't been?
 What color notebook/folder did you use for math? For science?
 If you won the lottery, what would you do first?
 Why did you choose your major?
@@ -41,13 +41,13 @@ Dogs or cats?
 Have you ever broken a bone?
 Favorite social media?
 Favorite app on your phone?
-What’s your favorite Taylor Swift album?
+What's your favorite Taylor Swift album?
 When is your birthday?
 Parks and Rec or The Office?
 If you were stranded on a desert island, what three things would you want with you?
 Do you play any instruments? If not, what would you like to play?
 What was the last book you read?
-What’s your SSN?
+What's your SSN?
 # What is your mother's maiden name?
 # What is the name of your first pet?
 Did you meet your roommate beforehand or did you go random?
@@ -67,9 +67,9 @@ Food Network or HGTV?
 Netflix, Hulu, or Amazon Prime?
 What about college are you most excited for?
 Spork, spife, or knork?
-Favorite class you’ve ever taken?
-What’s your favorite hobby?
-What’s your favorite show on Netflix?
+Favorite class you've ever taken?
+What's your favorite hobby?
+What's your favorite show on Netflix?
 Do a Tik Tok/Fortnite dance
 Is a hot dog a sandwich?
 Is a taco a sandwich?
