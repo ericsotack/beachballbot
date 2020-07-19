@@ -1,11 +1,14 @@
 from flask_restx import Api
 
 from api.routes.questions import api as questions_api
+from api.routes.groupme_bot import api as groupme_api
 
-ROUTES = [questions_api]
+
+ALL_ROUTES = [questions_api, groupme_api]
 
 
-def init_app(app):
+# routes is a list of api objects to add
+def init_app(app, routes):
     api = Api(
         title='Beach Ball API',
         version='1.0',
@@ -13,7 +16,7 @@ def init_app(app):
         doc='/doc/'
     )
 
-    for route in ROUTES:
+    for route in routes:
         api.add_namespace(route)
 
     api.init_app(app)

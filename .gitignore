@@ -2,6 +2,7 @@
 .idea/
 data/questions.db
 data/discord_token.txt
+data/groupme_config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

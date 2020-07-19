@@ -11,5 +11,5 @@ FLASK_QUESTIONS_FILE = qcutil.QUESTION_FILE
 def get_db():
     db = getattr(g, 'questions', None)
     if db is None:
-        db = g.questions = QuestionsDB(FLASK_DATABASE_FILE)
-    return db
+        g.questions = QuestionsDB(FLASK_DATABASE_FILE)
+    return g.questions
