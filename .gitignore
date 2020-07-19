@@ -1,6 +1,7 @@
 # Added stuff
 .idea/
-conf/questions.db
+data/questions.db
+data/discord_token.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

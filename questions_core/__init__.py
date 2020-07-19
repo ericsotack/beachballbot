@@ -1,12 +1,5 @@
 import sqlite3
-
-
-""" Default location of the questions JSON file """
-QUESTION_FILE = '../conf/questions.txt'
-
-""" Default location of the questions sqlite db file """
-DATABASE_FILE = '../conf/questions.db'
-
+import util
 
 def read_config_file(filename: str) -> list:
     """
@@ -41,6 +34,6 @@ def create_db_from_list(q_list: list, db_file: str):
     cur.close()
 
 
-def init_app():
-    q_list = read_config_file(QUESTION_FILE)
-    create_db_from_list(q_list, DATABASE_FILE)
+def init_db(q_file=util.QUESTION_FILE, db_file=util.DATABASE_FILE):
+    q_list = read_config_file(q_file)
+    create_db_from_list(q_list, db_file)

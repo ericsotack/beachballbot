@@ -6,3 +6,5 @@ questions-core is meant to be a backend for many different types of chat bots.
 
 ## Usage
 Run app.py as a flask app to start the REST api.
+Run discord.py as a normal python script to start it.
+- It must be configured with your own bot API key in conf/discordkey.txt

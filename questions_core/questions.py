@@ -7,15 +7,30 @@ import time
 import sqlite3
 
 import questions_core as qc
+import questions_core.util as util
 
 
-class QuestionList(object):
+class Questions(object):    # informal interface bc i don't feel like figuring out the abc package
+    def size(self):
+        raise NotImplementedError
+
+    def questions(self):
+        raise NotImplementedError
+
+    def question_at_index(self, idx: int):
+        raise NotImplementedError
+
+    def random_question(self, omit_list=None):
+        raise NotImplementedError
+
+
+class QuestionsList(Questions):
     """
     Object that holds questions for use with a question chat bot.
     Stores questions in a list.
     """
 
-    def __init__(self, filename: str):
+    def __init__(self, filename=util.QUESTION_FILE):
         """
         Read in a text data file containing the questions, each on its own line.
         :param filename: Path to the json file in which the questions are stored.
@@ -68,49 +83,46 @@ class QuestionList(object):
         qc.create_db_from_list(self.db, db_file)
 
 
-class QuestionDB(object):
+class QuestionsDB(Questions):
     """
     Object that holds questions for use with a question chat bot.
     Stores questions in a sqlite db.
     """
+    def __init__(self, db_file):
+        self.db_file = db_file
+        qc.init_db()
 
-    @staticmethod
-    def sql_size(db_file: str) -> int:
+    def size(self):
         """
         Determines how many questions are in the database
-        :param db_file: The file that the sqlite db is stored in
         :return: The number of questions in the database.
         """
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(self.db_file)
         cur = conn.cursor()
-        val_lst = cur.execute("SELECT COUNT(*) FROM QUESTIONS").fetchall()
+        val_lst = cur.execute("SELECT utilCOUNT(*) FROM QUESTIONS").fetchall()
         conn.close()
         return val_lst[0][0]
 
-    @staticmethod
-    def sql_get_questions(db_file: str) -> list:
+    def questions(self):
         """
         Get all questions from a sqlite database.
-        :param db_file: The file that the sqlite db is stored in.
         :return: The question string at the specified index.
         """
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(self.db_file)
         cur = conn.cursor()
         val_lst = cur.execute("SELECT question FROM QUESTIONS").fetchall()
         conn.close()
         return [q for (q,) in val_lst]
 
-    @staticmethod
-    def sql_get_question_at_idx(idx: int, db_file: str) -> str:
+    def question_at_index(self, idx):
         """
         Get the question at the 0-based index from a sqlite database.
         :param idx: The 0-based index for the question.
-        :param db_file: The file that the sqlite db is stored in.
         :return: The question string at the specified index.
         """
         assert isinstance(idx, int)
         assert idx >= 0
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(self.db_file)
         cur = conn.cursor()
         # val_lst is list of row-tuples, sql table indexing starts at 1
         val_lst = cur.execute("SELECT question FROM QUESTIONS WHERE qid = ?", (idx + 1,)).fetchall()
@@ -121,15 +133,13 @@ class QuestionDB(object):
         conn.close()
         return val
 
-    @staticmethod
-    def sql_get_random_question(db_file: str, omit_list=None) -> str:
+    def random_question(self, omit_list=None) -> str:
         """
         Get a random question from a sqlite db.
-        :param db_file: The file that the sqlite db is stored in.
         :param omit_list: List of question strings to not produce.
         :return: A random question from the collection of questions.
         """
-        all_list = QuestionDB.sql_get_questions(db_file)
+        all_list = self.questions()
 
         if omit_list is None or len(omit_list) >= len(all_list):
             omit_list = []
@@ -149,18 +159,8 @@ def debug():
     Allows for setting up debug scenarios
     :return: n/a
     """
-    db = QuestionList(qc.QUESTION_FILE)
+    db = QuestionsList(util.QUESTION_FILE)
     print(db.db)
-    # print(db.get_question())
-    # print(db.get_question())
-    #
-    # denylist = read_config_file(QUESTION_FILE)
-    # denylist = denylist[1:]
-    # print(db.get_question(denylist))
-    # print(db.get_question(denylist))
-    print(QuestionDB.sql_get_question_at_idx(0, qc.DATABASE_FILE))
-    print(QuestionDB.sql_get_questions(qc.DATABASE_FILE))
-    print(QuestionDB.sql_get_random_question(qc.DATABASE_FILE))
 
 
 if __name__ == "__main__":

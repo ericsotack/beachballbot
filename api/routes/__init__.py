@@ -1,6 +1,6 @@
 from flask_restx import Api
-from api.routes.questions import api as questions_api
 
+from api.routes.questions import api as questions_api
 
 ROUTES = [questions_api]
 
