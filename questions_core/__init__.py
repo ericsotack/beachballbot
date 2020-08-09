@@ -1,5 +1,6 @@
 import sqlite3
-import util
+import questions_core.util as util
+
 
 def read_config_file(filename: str) -> list:
     """
