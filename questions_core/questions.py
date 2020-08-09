@@ -99,7 +99,7 @@ class QuestionsDB(Questions):
         """
         conn = sqlite3.connect(self.db_file)
         cur = conn.cursor()
-        val_lst = cur.execute("SELECT utilCOUNT(*) FROM QUESTIONS").fetchall()
+        val_lst = cur.execute("SELECT COUNT(*) FROM QUESTIONS").fetchall()
         conn.close()
         return val_lst[0][0]
 
