@@ -8,5 +8,14 @@ questions-core is meant to be a backend for many different types of chat bots.
 Run app.py as a flask app to start the REST api and groupme bot.
 - The GroupMe bot must have a config file defined giving it a name and mapping from group_id to bot_id for that chat.
 
+- To run as a Flask app, you need the libraries specified in requirements.txt.
+Run the following commands from the project root.
+   
+   On windows to install the dependencies:
+   - $ py -m pip install -r requirements.txt
+   
+   Then to run:
+   - $ py -m flask run 
+
 Run discord.py as a normal python script to start it.
 - It must be configured with your own bot API token in conf/discord_token.txt
