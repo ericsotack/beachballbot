@@ -47,7 +47,7 @@ Parks and Rec or The Office?
 If you were stranded on a desert island, what three things would you want with you?
 Do you play any instruments? If not, what would you like to play?
 What was the last book you read?
-What's your SSN?
+# What's your SSN?
 # What is your mother's maiden name?
 # What is the name of your first pet?
 Did you meet your roommate beforehand or did you go random?
@@ -79,3 +79,4 @@ Do you have any questions about RIT?
 Windows, Linux, or Mac?
 Favorite candy?
 Would you rather fight 1 horse-sized duck or 100 duck-sized horses?
+What is your second favorite color and why?
