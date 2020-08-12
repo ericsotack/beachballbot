@@ -12,7 +12,8 @@ MEME_FILE = str(util.get_project_root() / "data/balloon_ritchie.jpg")
 
 
 def create_bot():
-    bot = commands.Bot(command_prefix=commands.when_mentioned)
+    # bot = commands.Bot(command_prefix=commands.when_mentioned)
+    bot = commands.Bot(command_prefix='.')
     rqg = bh.RandomQuestionGenerator(q.QuestionsList())     # lol closures
 
     @bot.command()
@@ -23,6 +24,7 @@ def create_bot():
     async def mascot(ctx):
         await ctx.send(file=discord.File(MEME_FILE))
 
+    print("Bot created.")
     return bot
 
 
@@ -30,4 +32,5 @@ if __name__ == '__main__':
     bot = create_bot()
     with open(TOKEN_FILE) as fd:
         token = fd.read()
+    print("Bot ready.")
     bot.run(token)
