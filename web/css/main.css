@@ -55,11 +55,23 @@ main {
     font-size: 28px;
     text-align: center;
     height: 300px;
-    max-width: 600px;
+    width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+}
+main>div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#question-container{
+    flex-grow: 1;
+}
+#button-container{
+    height: 25%;
+    flex-shrink: 0;
 }
 
 #new {
@@ -85,4 +97,8 @@ main {
     background: #555555;
     color: #cccccc;
     border-color: #333333;
+}
+
+#new:disabled{
+    opacity: 0.5;
 }
