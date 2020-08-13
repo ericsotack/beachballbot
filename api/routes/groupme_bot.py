@@ -3,9 +3,9 @@ import requests
 from flask import Flask, g, request
 from flask_restx import Namespace, Resource
 
-import api.routes.db as db
-import questions_core.util as util
-import questions_core.bot_helper as bh
+from api.routes import db
+from questions_core import util
+from questions_core import bot_helper as bh
 
 POST_URL = "https://api.groupme.com/v3/bots/post"
 
