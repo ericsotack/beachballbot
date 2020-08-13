@@ -3,7 +3,7 @@ import requests
 from flask import Flask, g, request
 from flask_restx import Namespace, Resource
 
-import routes.db as db
+import api.routes.db as db
 import questions_core.util as util
 import questions_core.bot_helper as bh
 
