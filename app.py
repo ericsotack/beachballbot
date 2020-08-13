@@ -1,8 +1,8 @@
 from flask import Flask
 
 import questions_core as qc
-import api.routes as routes
-import api.routes.db as api_util
+import apis.routes as routes
+import apis.routes.db as api_util
 
 
 def create_app():
