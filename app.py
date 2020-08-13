@@ -19,10 +19,8 @@ def create_app():
     return flask_app
 
 
-def run():
-    app = create_app()
-    app.run()
+app = create_app()
 
 
 if __name__ == '__main__':
-    run()
+    app.run()
