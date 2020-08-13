@@ -1,3 +1,5 @@
+import os
+
 import discord
 from discord.ext import commands
 
@@ -9,6 +11,7 @@ import questions_core.util as util
 """ The file that the api token is stored in. """
 TOKEN_FILE = str(util.get_project_root() / "data/discord_token.txt")
 MEME_FILE = str(util.get_project_root() / "data/balloon_ritchie.jpg")
+DISCORD_VAR = 'DISCORDTOKEN'
 
 
 def create_bot():
@@ -30,7 +33,10 @@ def create_bot():
 
 if __name__ == '__main__':
     bot = create_bot()
-    with open(TOKEN_FILE) as fd:
-        token = fd.read()
+    try:
+        with open(TOKEN_FILE) as fd:
+            token = fd.read()
+    except FileNotFoundError:
+        token = os.environ[DISCORD_VAR]
     print("Bot ready.")
     bot.run(token)

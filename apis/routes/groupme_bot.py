@@ -1,4 +1,6 @@
 import json
+import os
+
 import requests
 from flask import Flask, g, request
 from flask_restx import Namespace, Resource
@@ -10,6 +12,8 @@ from questions_core import bot_helper as bh
 POST_URL = "https://api.groupme.com/v3/bots/post"
 
 CONFIG_FILE = str(util.get_project_root() / "data/groupme_config.json")
+
+ENV_CONFIG = 'GROUPMECONF'
 
 api = Namespace("groupme", description="Allows GroupMe to callback to a bot whenever a message is sent in a chat")
 
@@ -24,9 +28,15 @@ api = Namespace("groupme", description="Allows GroupMe to callback to a bot when
 # CONFIG
 
 
-def read_in_config(conf_file):
+def read_in_config_file(conf_file):
     with open(conf_file) as cf:
         conf_str = cf.read()
+    conf = json.loads(conf_str)
+    return conf['bot_name'], conf['groups']
+
+
+def read_in_config_env(env_var):
+    conf_str = os.environ[env_var]
     conf = json.loads(conf_str)
     return conf['bot_name'], conf['groups']
 
@@ -36,7 +46,10 @@ def read_in_config(conf_file):
 
 def initial_setup():
     db.get_db()     # ensure db is initialized
-    g.name, g.group_id_to_bot_id = read_in_config(CONFIG_FILE)
+    try:
+        g.name, g.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
+    except FileNotFoundError:
+        g.name, g.group_id_to_bot_id = read_in_config_env(ENV_CONFIG)
     g.group_id_to_rqg = {}
     for group_id in g.group_id_to_bot_id:
         g.group_id_to_rqg[group_id] = bh.RandomQuestionGenerator(db.get_db())
