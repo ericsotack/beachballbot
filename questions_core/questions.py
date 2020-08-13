@@ -38,7 +38,7 @@ class QuestionsList(Questions):
         """
         self.db = qc.read_config_file(filename)
         self.rand = random.Random()
-        self.rand.seed(time.time_ns())
+        self.rand.seed(int(time.time()))
 
     def size(self):
         """
@@ -148,7 +148,7 @@ class QuestionsDB(Questions):
         q_list = [item for item in all_list if item not in omit_list]
 
         rand = random.Random()
-        rand.seed(time.time_ns())
+        rand.seed(int(time.time()))
         idx = rand.randrange(len(q_list))
         return q_list[idx]
 

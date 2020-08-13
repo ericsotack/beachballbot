@@ -9,7 +9,7 @@ class RandomQuestionGenerator(object):
     def __init__(self, questions: q.Questions, capacity=5):
         self.lock = threading.Lock()
         self.rand = random.Random()
-        self.rand.seed(time.time_ns())
+        self.rand.seed(int(time.time()))
         self.questions = questions
         self.capacity = capacity
         with self.lock:
