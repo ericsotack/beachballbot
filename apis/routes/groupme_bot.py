@@ -37,6 +37,7 @@ def read_in_config_file(conf_file):
 
 def read_in_config_env(env_var):
     conf_str = os.environ[env_var]
+    print(conf_str)
     conf = json.loads(conf_str)
     return conf['bot_name'], conf['groups']
 
