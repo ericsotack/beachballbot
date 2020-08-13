@@ -1,7 +1,7 @@
 from flask_restx import Api
 
-from routes.questions import api as questions_api
-from routes.groupme_bot import api as groupme_api
+from api.routes.questions import api as questions_api
+from api.routes.groupme_bot import api as groupme_api
 
 
 ALL_ROUTES = [questions_api, groupme_api]

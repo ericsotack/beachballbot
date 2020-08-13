@@ -3,7 +3,7 @@ import json
 from flask import Response
 from flask_restx import Namespace, Resource
 
-from routes.db import get_db
+from api.routes.db import get_db
 
 
 api = Namespace("questions", description="Provides the ability to query for questions.")
