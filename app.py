@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_talisman import Talisman
 
 import questions_core as qc
 import apis.routes as routes
@@ -20,6 +21,7 @@ def create_app():
 
 
 app = create_app()
+Talisman(app)
 
 
 if __name__ == '__main__':
