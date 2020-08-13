@@ -84,6 +84,9 @@ def init_app():
     app = Flask(__name__)
     # could do all of the initial setup stuff, but this gets handled when initial_setup() is called, when
     # any of the singletons are unfilled
+    @app.before_request
+    def before_request():
+        initial_setup()
     return app
 
 
