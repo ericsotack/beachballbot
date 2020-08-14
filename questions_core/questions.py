@@ -10,17 +10,34 @@ import questions_core as qc
 import questions_core.util as util
 
 
-class Questions(object):    # informal interface bc i don't feel like figuring out the abc package
+class Questions(object):    # informal interface
+    """
+    Interface representing a collection of questions.
+    """
     def size(self):
+        """
+        :return: The number of questions available for use.
+        """
         raise NotImplementedError
 
     def questions(self):
+        """
+        :return: List of all of the questions available.
+        """
         raise NotImplementedError
 
     def question_at_index(self, idx: int):
+        """
+        :param idx: The 0-based index that the desired question is stored at.
+        :return: The question at the given idx.
+        """
         raise NotImplementedError
 
     def random_question(self, omit_list=None):
+        """
+        :param omit_list: List of question strings that should not be returned.
+        :return: A random question from the list of questions that is not in omit_list.
+        """
         raise NotImplementedError
 
 
@@ -89,6 +106,10 @@ class QuestionsDB(Questions):
     Stores questions in a sqlite db.
     """
     def __init__(self, db_file):
+        """
+        Create a new QuestionsDB.
+        :param db_file: The database file to create the QuestionDB with.
+        """
         self.db_file = db_file
         qc.init_db()
 

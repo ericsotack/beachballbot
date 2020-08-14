@@ -36,5 +36,11 @@ def create_db_from_list(q_list: list, db_file: str):
 
 
 def init_db(q_file=util.QUESTION_FILE, db_file=util.DATABASE_FILE):
+    """
+    Initialize the database at db_file with the questions stored in q_file.
+    :param q_file: the file that contains the list of questions.
+    :param db_file: the file that the database is stored in.
+    :return: n/a
+    """
     q_list = read_config_file(q_file)
     create_db_from_list(q_list, db_file)

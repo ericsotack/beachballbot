@@ -6,6 +6,10 @@ import questions_core.questions as q
 
 
 class RandomQuestionGenerator(object):
+    """
+    A class that manages the question database and maintains a list of questions
+    of size {capacity} to track what questions shouldn't be tracked.
+    """
     def __init__(self, questions: q.Questions, capacity=5):
         self.lock = threading.Lock()
         self.rand = random.Random()
@@ -29,14 +33,25 @@ class RandomQuestionGenerator(object):
                 self.recent.append(item)
 
     def _clear(self):
+        """
+        Clear the list of recently seen questions and start fresh. You omay get duplicate questions
+        :return: n/a
+        """
         with self.lock:
             self.recent = []
 
     def _is_recent(self, idx):
+        """
+        :param idx: The index at which the question should be returned.
+        :return: True if the question_idx appears in the list of recent questions. False otherwise.
+        """
         with self.lock:
             return idx in self.recent
 
     def random_question(self) -> str:
+        """
+        :return: A random question that has not been seen recently.
+        """
         # avoids not having any question that can be asked
         if self._size() >= self.questions.size():
             self._clear()
