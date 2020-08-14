@@ -20,10 +20,18 @@ class RandomQuestionGenerator(object):
             self.recent = []
 
     def _size(self):
+        """
+        :return: The number of recent questions being tracked.
+        """
         with self.lock:
             return len(self.recent)
 
     def _add(self, item):
+        """
+        Add the index of the question to the list of recent questions.
+        :param item: The question idx to add to the list of recent questions.
+        :return: n/a
+        """
         with self.lock:
             if len(self.recent) < self.capacity:
                 self.recent.append(item)

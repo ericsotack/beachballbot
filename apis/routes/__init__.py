@@ -4,11 +4,17 @@ from apis.routes.questions import api as questions_api
 from apis.routes.groupme_bot import api as groupme_api
 
 
+""" Default list of apis to add to the passed in app """
 ALL_ROUTES = [questions_api, groupme_api]
 
 
-# routes is a list of api objects to add
 def init_app(app, routes):
+    """
+    Initialize the various routes.
+    :param app: The app to initialize the routes in.
+    :param routes: The list of flask api objects to add to the app.
+    :return: n/a
+    """
     api = Api(
         title='Beach Ball API',
         version='1.0',

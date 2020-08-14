@@ -9,6 +9,11 @@ FLASK_QUESTIONS_FILE = qcutil.QUESTION_FILE
 
 # singleton db
 def get_db():
+    """
+    Singleton Database.
+    If the database doesn't exist, reads it in. So it exists.
+    :return: The database of questions.
+    """
     db = getattr(g, 'questions', None)
     if db is None:
         g.questions = QuestionsDB(FLASK_DATABASE_FILE)
