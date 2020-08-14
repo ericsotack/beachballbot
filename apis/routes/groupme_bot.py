@@ -57,6 +57,14 @@ def read_in_config_env(env_var):
 
 
 def initial_setup(glob_vars):
+    """
+    Initial setup for the groupme bot configuration. Given the global variable environment, fills in the values
+    for the name and the dictionary mapping group_id to bot_id if they are missing.
+    Attempts to read in the values from a JSON file and from an environment variable.
+    Also verifies that the necessary sqlite database is present.
+    :param glob_vars: The global variable environment where the values are to be stored.
+    :return: n/a
+    """
     db.get_db()     # ensure db is initialized
     try:
         glob_vars.groupme_name, glob_vars.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
@@ -67,43 +75,74 @@ def initial_setup(glob_vars):
         glob_vars.group_id_to_rqg[group_id] = bh.RandomQuestionGenerator(db.get_db())
 
 
-def get_groupme_name():
-    name = getattr(g, 'groupme_name', None)
+def get_groupme_name(glob_vars):
+    """
+    Get the groupme name from the global environment
+    :param glob_vars: The global variable environment where the name is stored.
+    :return: The name associated with the GroupMe bot.
+    """
+    name = getattr(glob_vars, 'groupme_name', None)
     if name is None:
-        initial_setup(g)
-    return g.groupme_name
+        initial_setup(glob_vars)
+    return glob_vars.groupme_name
 
 
-def get_bot_id(group_id):
-    mapping = getattr(g, 'group_id_to_bot_id', None)
+def get_bot_id(glob_var, group_id):
+    """
+    Get the bot_id that identifies the bot in context as a member of a specific group.
+    :param glob_var: The global variable environment where the name is stored.
+    :param group_id: The group tha the bot is a member of that we want the specific bot_id for.
+    :return: The bot_id for this bot associated with the specified group_id
+    """
+    mapping = getattr(glob_var, 'group_id_to_bot_id', None)
     if mapping is None:
-        initial_setup(g)
-    return g.group_id_to_bot_id[group_id]
+        initial_setup(glob_var)
+    return glob_var.group_id_to_bot_id[group_id]
 
 
-def get_rqg(group_id) -> bh.RandomQuestionGenerator:
-    mapping = getattr(g, 'group_id_to_rqg', None)
+def get_rqg(glob_var, group_id) -> bh.RandomQuestionGenerator:
+    """
+    Get the RandomQuestionGenrator for this specific group. Each group has their own RandomQuestionGenerator
+    so they can manage their own state for what questions they have already seen.
+    :param glob_var: The global variable environment where the name is stored.
+    :param group_id: The group tha the bot is a member of that we want the specific RandomQuestionGenerator for.
+    :return: The RandomQuestionGenerator object for that group.
+    """
+    mapping = getattr(glob_var, 'group_id_to_rqg', None)
     if mapping is None:
-        initial_setup(g)
-    return g.group_id_to_rqg[group_id]
+        initial_setup(glob_var)
+    return glob_var.group_id_to_rqg[group_id]
 
 
 # APP
 
 
 def init_app():
+    """
+    Initialize the app. Setup the actions that occurs before a request, namely hat the global environment is
+    verified to be ready.
+    :return: The flask app.
+    """
     app = Flask(__name__)
-    # could do all of the initial setup stuff, but this gets handled when initial_setup() is called, when
-    # any of the singletons are unfilled
 
     @app.before_request
     def before_request():
+        """
+        Before a request is handled, ensure that the global environment is initialized.
+        :return:
+        """
         initial_setup(g)
 
     return app
 
 
 def send_message(msg, bot_id):
+    """
+    POST a message back to the GroupMe API.
+    :param msg: The text to send in the message.
+    :param bot_id: The bot_id that identifies the bot and group that is sending the message.
+    :return: n/a
+    """
     data = {
         'bot_id': bot_id,
         'text': msg
@@ -114,14 +153,23 @@ def send_message(msg, bot_id):
 # relative to defined namespace (see globals at top of file)
 @api.route("/")
 class GetQuestions(Resource):
+    """
+    Class to handle requests to /groupme
+    """
     def post(self):
+        """
+        Method to handle requests for POST /groupme to notify the bot when a message is sent to a chat
+        that it is a part of. If the message is a recognized command, respond to the command and send the
+        response back to the originating group.
+        :return: "ok" text string, success status code
+        """
         data = request.get_json()
 
         # prevent bot from acting on its own messages
-        if data['name'] != get_groupme_name() and data['text'] == ".ask":
+        if data['name'] != get_groupme_name(g) and data['text'] == ".ask":
             group_id = data['group_id']
-            bot_id = get_bot_id(group_id)
-            question = get_rqg(group_id).random_question()
+            bot_id = get_bot_id(g, group_id)
+            question = get_rqg(g, group_id).random_question()
             print("Question:", question)
             print("group_id:", group_id)
             print("bot_id", bot_id)
