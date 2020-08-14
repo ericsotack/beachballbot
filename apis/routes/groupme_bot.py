@@ -18,15 +18,8 @@ ENV_CONFIG = 'GROUPMECONF'
 api = Namespace("groupme", description="Allows GroupMe to callback to a bot whenever a message is sent in a chat")
 
 
-# I think the owner of the bot needs to be in all of the groups that the bot is to be in.
-# Figure out how to do automatic deployment of bots in many groups
-#   figure out all of the group ids manually
-#   manually send json requests to register the bot in each group
-#       save the bot_id from each response and put them into the json file mapping from group id to bot id
-
-
 # CONFIG
-
+# note that the owner of the bot needs to be in all of the groups that the bot is to be added to.
 
 def read_in_config_file(conf_file):
     with open(conf_file) as cf:
@@ -48,9 +41,9 @@ def read_in_config_env(env_var):
 def initial_setup(glob_vars):
     db.get_db()     # ensure db is initialized
     try:
-        glob_vars.name, glob_vars.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
+        glob_vars.groupme_name, glob_vars.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
     except FileNotFoundError:
-        glob_vars.name, glob_vars.group_id_to_bot_id = read_in_config_env(ENV_CONFIG)
+        glob_vars.groupme_name, glob_vars.group_id_to_bot_id = read_in_config_env(ENV_CONFIG)
     glob_vars.group_id_to_rqg = {}
     for group_id in glob_vars.group_id_to_bot_id:
         glob_vars.group_id_to_rqg[group_id] = bh.RandomQuestionGenerator(db.get_db())
