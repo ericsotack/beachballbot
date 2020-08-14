@@ -45,35 +45,35 @@ def read_in_config_env(env_var):
 # SINGLETONS
 
 
-def initial_setup():
+def initial_setup(glob_vars):
     db.get_db()     # ensure db is initialized
     try:
-        g.name, g.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
+        glob_vars.name, glob_vars.group_id_to_bot_id = read_in_config_file(CONFIG_FILE)
     except FileNotFoundError:
-        g.name, g.group_id_to_bot_id = read_in_config_env(ENV_CONFIG)
-    g.group_id_to_rqg = {}
-    for group_id in g.group_id_to_bot_id:
-        g.group_id_to_rqg[group_id] = bh.RandomQuestionGenerator(db.get_db())
+        glob_vars.name, glob_vars.group_id_to_bot_id = read_in_config_env(ENV_CONFIG)
+    glob_vars.group_id_to_rqg = {}
+    for group_id in glob_vars.group_id_to_bot_id:
+        glob_vars.group_id_to_rqg[group_id] = bh.RandomQuestionGenerator(db.get_db())
 
 
 def get_groupme_name():
     name = getattr(g, 'groupme_name', None)
     if name is None:
-        initial_setup()
+        initial_setup(g)
     return g.groupme_name
 
 
 def get_bot_id(group_id):
     mapping = getattr(g, 'group_id_to_bot_id', None)
     if mapping is None:
-        initial_setup()
+        initial_setup(g)
     return g.group_id_to_bot_id[group_id]
 
 
 def get_rqg(group_id) -> bh.RandomQuestionGenerator:
     mapping = getattr(g, 'group_id_to_rqg', None)
     if mapping is None:
-        initial_setup()
+        initial_setup(g)
     return g.group_id_to_rqg[group_id]
 
 
@@ -84,9 +84,11 @@ def init_app():
     app = Flask(__name__)
     # could do all of the initial setup stuff, but this gets handled when initial_setup() is called, when
     # any of the singletons are unfilled
+
     @app.before_request
     def before_request():
-        initial_setup()
+        initial_setup(g)
+
     return app
 
 
