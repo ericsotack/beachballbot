@@ -13,7 +13,9 @@ def create_app():
     # setup default routing to index.html
     @flask_app.route('/')
     def index():
-        return flask_app.send_static_file('index.html')
+        response = flask_app.make_response(flask_app.send_static_file('index.html'))
+        response.headers['Content-Security-Policy'] = "style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com"
+        return response
 
     routes.init_app(flask_app, routes.ALL_ROUTES)
 
