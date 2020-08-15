@@ -12,7 +12,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    overflow: hidden;
     height: 100%;
     /* overflow: hidden; */
 }
@@ -52,6 +51,7 @@ main {
     color: #444444;
     font-family: 'Roboto Slab', 'Times New Roman', serif;
     padding: 20px;
+    box-sizing: border-box;
     font-size: 28px;
     text-align: center;
     height: 300px;
@@ -60,15 +60,20 @@ main {
     flex-direction: column;
     align-items: center;
 }
+
 main>div{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
+
 #question-container{
     flex-grow: 1;
 }
+
 #button-container{
     height: 25%;
     flex-shrink: 0;
@@ -101,4 +106,28 @@ main>div{
 
 #new:disabled{
     opacity: 0.5;
+}
+
+@media (max-width: 450px), (max-height: 450px) {
+    header{
+        font-size: 16px;
+    }
+    #logo {
+        height: 75%;
+    }
+    #question-container{
+        flex-grow: initial;
+    }
+    #button-container{
+        flex-shrink: initial;
+        height: auto;
+    }
+    main {
+        height: 100%;
+        background: none;
+        font-size: 20px;
+    }
+    #new {
+        font-size: 14px;
+    }
 }
